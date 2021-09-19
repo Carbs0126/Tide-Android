@@ -35,6 +35,7 @@ public class Tide {
             OnRecyclerViewScrollListener onRecyclerViewScrollListener = tide.getOnScrollListener();
             if (onRecyclerViewScrollListener.getRecyclerView() != recyclerView) {
                 recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
+                onRecyclerViewScrollListener.setRecyclerView(recyclerView);
             }
         }
         return tide;
