@@ -1,12 +1,16 @@
 package cn.carbs.tide.library;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import cn.carbs.tide.library.configuration.TideConfiguration;
 import cn.carbs.tide.library.producer.Task;
 import cn.carbs.tide.library.queue.TaskStack;
+import cn.carbs.tide.library.scroll.OnRecyclerViewScrollListener;
 
 public class Tide {
 
-    private TideConfiguration mConfiguration = new TideConfiguration();
+    private TideConfiguration mConfiguration;
+    private OnRecyclerViewScrollListener mOnScrollListener;
 
     private Tide() {
         init();
@@ -25,8 +29,39 @@ public class Tide {
         return singleton;
     }
 
-    private void init() {
+    public static Tide with(RecyclerView recyclerView) {
+        Tide tide = getInstance();
+        if (recyclerView != null) {
+            OnRecyclerViewScrollListener onRecyclerViewScrollListener = tide.getOnScrollListener();
+            if (onRecyclerViewScrollListener.getRecyclerView() != recyclerView) {
+                recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
+            }
+        }
+        return tide;
+    }
 
+    private void init() {
+        initConfiguration();
+        initOnScrollListener();
+    }
+
+    private void initConfiguration() {
+        if (mConfiguration == null) {
+            mConfiguration = new TideConfiguration();
+        }
+    }
+
+    private void initOnScrollListener() {
+        if (mOnScrollListener == null) {
+            mOnScrollListener = new OnRecyclerViewScrollListener();
+        }
+    }
+
+    protected OnRecyclerViewScrollListener getOnScrollListener() {
+        if (mOnScrollListener == null) {
+            initOnScrollListener();
+        }
+        return mOnScrollListener;
     }
 
     public Tide skipCache() {

@@ -58,7 +58,7 @@ public class ItemView extends RelativeLayout {
         Log.d("wangwang", "doTask()");
         Tide
                 .getInstance()
-                .setMaxConcurrentTaskCount(2)
+                .setMaxConcurrentTaskCount(50)
                 .skipTaskWhileScrolling()
                 .put(new NetTask(mData.url, new TaskCallback() {
                     @Override

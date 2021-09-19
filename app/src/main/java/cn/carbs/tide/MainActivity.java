@@ -5,14 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import cn.carbs.tide.recyclerview.adapter.TheAdapter;
 import cn.carbs.tide.recyclerview.model.ItemData;
