@@ -1,6 +1,8 @@
 package cn.carbs.tide.library.queue;
 
-import java.util.Queue;
+import android.util.Log;
+
+import java.util.Stack;
 
 import cn.carbs.tide.library.Tide;
 import cn.carbs.tide.library.consumer.TaskExecutor;
@@ -17,7 +19,7 @@ public class TaskLooper {
 
     public static TaskLooper getInstance() {
         if (singleton == null) {
-            synchronized (TaskQueue.class) {
+            synchronized (TaskLooper.class) {
                 if (singleton == null) {
                     singleton = new TaskLooper();
                 }
@@ -34,8 +36,9 @@ public class TaskLooper {
         return TaskPoolExecutor.newFixedTaskExecutor(maxConcurrentTaskCount);
     }
 
-    public void handleTasksInQueue(Queue<Task> queue) {
-        if (queue == null || queue.size() == 0) {
+    public void handleTasksInStack(Stack<Task> taskStack) {
+        if (taskStack == null || taskStack.empty()) {
+            Log.d("wangwang", "--> handleTasksInStack taskStack empty ");
             return;
         }
         // TODO 最多多少个task一同执行，不应该用静态最大值
@@ -43,12 +46,16 @@ public class TaskLooper {
 
         // 如果taskExecutor空闲,或者可以继续执行
         int idlePositionCount = taskExecutor.getIdlePositionCount();
+        Log.d("wangwang", "--> handleTasksInStack taskExecutor idlePosition : " + idlePositionCount);
         if (idlePositionCount == 0) {
             // taskExecutor被占用了，暂时不处理，等待taskExecutor执行完毕后，通知taskLooper
             return;
         }
         while (idlePositionCount > 0) {
-            Task task = queue.poll();
+            if (taskStack.empty()) {
+                break;
+            }
+            Task task = taskStack.pop();
             if (task != null) {
                 taskExecutor.submit(task);
             }

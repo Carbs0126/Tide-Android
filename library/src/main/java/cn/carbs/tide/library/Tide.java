@@ -2,7 +2,7 @@ package cn.carbs.tide.library;
 
 import cn.carbs.tide.library.configuration.TideConfiguration;
 import cn.carbs.tide.library.producer.Task;
-import cn.carbs.tide.library.queue.TaskQueue;
+import cn.carbs.tide.library.queue.TaskStack;
 
 public class Tide {
 
@@ -41,12 +41,12 @@ public class Tide {
 
     public Tide put(Task task) {
         task.setConfiguration(mConfiguration);
-        TaskQueue.getInstance().put(task);
+        TaskStack.getInstance().put(task);
         return this;
     }
 
     public void start() {
-        TaskQueue.getInstance().notifyLopper();
+        TaskStack.getInstance().notifyLopper();
     }
 
     public Tide setMaxConcurrentTaskCount(int maxConcurrentTaskCount) {

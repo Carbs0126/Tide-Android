@@ -27,26 +27,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initRecyclerView();
         initData();
-
-        test();
-    }
-
-    private void test() {
-        Queue<String> queue = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            queue.offer("string : " + i);
-        }
-        Log.d("wangwang", "---------> item : ");
-        for (String item : queue) {
-            Log.d("wangwang", "---------> item : " + item);
-        }
-
-        for (int i = 0; i < 12; i++) {
-            String x = queue.poll();
-            // 有可能为空，但是不报错
-            Log.d("wangwang", "---------> x : " + x);
-        }
-
     }
 
     private void initRecyclerView() {

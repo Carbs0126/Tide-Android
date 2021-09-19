@@ -1,7 +1,5 @@
 package cn.carbs.tide.request;
 
-import cn.carbs.tide.library.queue.TaskQueue;
-
 public class RequestManager {
 
     private RequestManager() {
@@ -12,7 +10,7 @@ public class RequestManager {
 
     public static RequestManager getInstance() {
         if (singleton == null) {
-            synchronized (TaskQueue.class) {
+            synchronized (RequestManager.class) {
                 if (singleton == null) {
                     singleton = new RequestManager();
                 }

@@ -1,18 +1,17 @@
 package cn.carbs.tide.library.consumer;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 import cn.carbs.tide.library.cache.TaskCache;
 import cn.carbs.tide.library.producer.Task;
 import cn.carbs.tide.library.producer.TaskState;
-import cn.carbs.tide.library.queue.TaskQueue;
+import cn.carbs.tide.library.queue.TaskStack;
 
 public class TaskExecutor {
 
     private int maxConcurrentTaskCount;
 
-    public Queue<Task> mTasks;
+    public Stack<Task> mTasks;
 
     // 一旦确定就不能更改
     public TaskExecutor(int maxConcurrentTaskCount) {
@@ -22,7 +21,7 @@ public class TaskExecutor {
 
     private void init() {
         if (mTasks == null) {
-            mTasks = new LinkedList<>();
+            mTasks = new Stack<>();
         }
     }
 
@@ -31,17 +30,19 @@ public class TaskExecutor {
     }
 
     public int getIdlePositionCount() {
-        if (mTasks == null) {
-            return maxConcurrentTaskCount;
-        }
-        int busyPosition = 0;
-        for (Task taskItem : mTasks) {
-            if (taskItem.state == TaskState.Done) {
-                continue;
+//        synchronized (this) {
+            if (mTasks == null) {
+                return maxConcurrentTaskCount;
             }
-            busyPosition++;
-        }
-        return maxConcurrentTaskCount - busyPosition;
+            int busyPosition = 0;
+            for (Task taskItem : mTasks) {
+                if (taskItem.state == TaskState.Done) {
+                    continue;
+                }
+                busyPosition++;
+            }
+            return maxConcurrentTaskCount - busyPosition;
+//        }
     }
 
     // TODO 返回的应该是一个task
@@ -52,51 +53,52 @@ public class TaskExecutor {
     }
 
     private void executeTasks() {
-        for (Task taskItem : mTasks) {
-            if (taskItem.state != TaskState.Pending) {
-                continue;
-            }
-            if (taskItem != null) {
-                if (!taskItem.getIfSkipCache()) {
-                    // 如果不跳过缓存
-                    Object result = TaskCache.getInstance().getValueByKey(taskItem.getId());
-                    if (result != null) {
-                        taskItem.runTaskCallback(result, null);
-                        taskItem.state = TaskState.Done;
-                        // TODO
-                        TaskQueue.getInstance().notifyLopper();
-                        continue;
-                    }
+//        synchronized (this) {
+            for (Task taskItem : mTasks) {
+                if (taskItem.state != TaskState.Pending) {
+                    continue;
                 }
-                taskItem.state = TaskState.Executing;
-                taskItem.run();
+                if (taskItem != null) {
+                    if (!taskItem.getIfSkipCache()) {
+                        // 如果不跳过缓存
+                        Object result = TaskCache.getInstance().getValueByKey(taskItem.getId());
+                        if (result != null) {
+                            taskItem.runTaskCallback(result, null);
+                            taskItem.state = TaskState.Done;
+                            // TODO
+                            TaskStack.getInstance().notifyLopper();
+                            continue;
+                        }
+                    }
+                    taskItem.state = TaskState.Executing;
+                    taskItem.run();
+                }
             }
-        }
+//        }
     }
 
     private void removeCompletedTasks() {
-        synchronized (TaskExecutor.class) {
+//        synchronized (this) {
 
-        }
+//        }
     }
 
     public void addTask(Task task) {
-        synchronized (this) {
+//        synchronized (this) {
             if (mTasks == null) {
-                mTasks = new LinkedList<>();
+                mTasks = new Stack<>();
             }
-            mTasks.offer(task);
-        }
+            mTasks.push(task);
+//        }
     }
 
     // 一个task执行完毕之后，将会被从Executor中移除
     public void removeTask(Task task) {
-        synchronized (this) {
+//        synchronized (this) {
             if (mTasks == null) {
                 return;
             }
             mTasks.remove(task);
-        }
+//        }
     }
-
 }

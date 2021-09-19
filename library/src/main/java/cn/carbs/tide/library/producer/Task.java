@@ -6,7 +6,7 @@ import cn.carbs.tide.library.cache.TaskCache;
 import cn.carbs.tide.library.configuration.TaskConfiguration;
 import cn.carbs.tide.library.configuration.TideConfiguration;
 import cn.carbs.tide.library.consumer.TaskExecutor;
-import cn.carbs.tide.library.queue.TaskQueue;
+import cn.carbs.tide.library.queue.TaskStack;
 
 public abstract class Task {
 
@@ -96,7 +96,7 @@ public abstract class Task {
 
     private void notifyLooperToWorkAgain() {
         // queue继续执行
-        TaskQueue.getInstance().notifyLopper();
+        TaskStack.getInstance().notifyLopper();
     }
 
 }
