@@ -30,7 +30,7 @@ public class TaskExecutor {
     }
 
     public int getIdlePositionCount() {
-//        synchronized (this) {
+        synchronized (this) {
             if (mTasks == null) {
                 return maxConcurrentTaskCount;
             }
@@ -42,7 +42,7 @@ public class TaskExecutor {
                 busyPosition++;
             }
             return maxConcurrentTaskCount - busyPosition;
-//        }
+        }
     }
 
     // TODO 返回的应该是一个task
@@ -53,7 +53,7 @@ public class TaskExecutor {
     }
 
     private void executeTasks() {
-//        synchronized (this) {
+        synchronized (this) {
             for (Task taskItem : mTasks) {
                 if (taskItem.state != TaskState.Pending) {
                     continue;
@@ -74,31 +74,31 @@ public class TaskExecutor {
                     taskItem.run();
                 }
             }
-//        }
+        }
     }
 
     private void removeCompletedTasks() {
-//        synchronized (this) {
+        synchronized (this) {
 
-//        }
+        }
     }
 
     public void addTask(Task task) {
-//        synchronized (this) {
+        synchronized (this) {
             if (mTasks == null) {
                 mTasks = new Stack<>();
             }
             mTasks.push(task);
-//        }
+        }
     }
 
     // 一个task执行完毕之后，将会被从Executor中移除
     public void removeTask(Task task) {
-//        synchronized (this) {
+        synchronized (this) {
             if (mTasks == null) {
                 return;
             }
             mTasks.remove(task);
-//        }
+        }
     }
 }
