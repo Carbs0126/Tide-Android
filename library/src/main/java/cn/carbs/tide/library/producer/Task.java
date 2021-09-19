@@ -58,7 +58,7 @@ public abstract class Task {
             if (mConfiguration == null) {
                 mConfiguration = new TaskConfiguration();
             }
-            mConfiguration.skipTaskWhileScrolling = tideConfiguration.skipTaskWhileScrolling;
+            mConfiguration.pauseTaskWhileScrolling = tideConfiguration.pauseTaskWhileScrolling;
             mConfiguration.skipCache = tideConfiguration.skipCache;
         }
     }
@@ -70,11 +70,11 @@ public abstract class Task {
         return mConfiguration.skipCache;
     }
 
-    public boolean getIfSkipTaskWhileScrolling() {
+    public boolean getIfPauseTaskWhileScrolling() {
         if (mConfiguration == null) {
             return false;
         }
-        return mConfiguration.skipTaskWhileScrolling;
+        return mConfiguration.pauseTaskWhileScrolling;
     }
 
     private void addToCache(Object result, Throwable throwable) {
@@ -85,6 +85,7 @@ public abstract class Task {
     }
 
     private void removeTaskFromExecutor() {
+        this.state = TaskState.Done;
         // 从executor中移除
         if (weakExecutor != null) {
             TaskExecutor taskExecutor = weakExecutor.get();

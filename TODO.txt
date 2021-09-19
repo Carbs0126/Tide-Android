@@ -1,5 +1,5 @@
 
-改成stack
+快速滑动，会把所有的要执行的task都加入到stack中
 
 去掉remove，只是置位
 

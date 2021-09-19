@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import cn.carbs.tide.R;
 import cn.carbs.tide.library.Tide;
 import cn.carbs.tide.library.producer.Task;
@@ -20,6 +22,7 @@ public class ItemView extends RelativeLayout {
     private TextView mTVContent2;
 
     private ItemData mData;
+    private RecyclerView mRecyclerView;
 
     public ItemView(Context context) {
         super(context);
@@ -43,11 +46,12 @@ public class ItemView extends RelativeLayout {
         mTVContent2 = findViewById(R.id.tv_content_2);
     }
 
-    public void update(ItemData data) {
+    public void update(ItemData data, RecyclerView recyclerView) {
         if (data == null) {
             return;
         }
         mData = data;
+        mRecyclerView = recyclerView;
         mTVTitle.setText(mData.title);
         mTVContent1.setText("ID : " + mData.dataID + "  url : " + mData.url);
         mTVContent2.setText("");
@@ -57,7 +61,7 @@ public class ItemView extends RelativeLayout {
     private void doTask() {
         Log.d("wangwang", "doTask()");
         Tide
-                .getInstance()
+                .with(mRecyclerView)
                 .setMaxConcurrentTaskCount(50)
                 .skipTaskWhileScrolling()
                 .put(new NetTask(mData.url, new TaskCallback() {

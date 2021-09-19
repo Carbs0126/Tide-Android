@@ -38,21 +38,20 @@ public class TaskLooper {
 
     public void handleTasksInStack(Stack<Task> taskStack) {
         if (taskStack == null || taskStack.empty()) {
-            Log.d("wangwang", "--> handleTasksInStack taskStack empty ");
-            return;
+            Log.d("aaa", "--> handleTasksInStack taskStack empty ");
+//            return;
         }
         // TODO 最多多少个task一同执行，不应该用静态最大值
         TaskExecutor taskExecutor = getAppropriateTaskExecutor(Tide.getInstance().getMaxConcurrentTaskCount());
-
         // 如果taskExecutor空闲,或者可以继续执行
         int idlePositionCount = taskExecutor.getIdlePositionCount();
         Log.d("wangwang", "--> handleTasksInStack taskExecutor idlePosition : " + idlePositionCount);
-        if (idlePositionCount == 0) {
-            // taskExecutor被占用了，暂时不处理，等待taskExecutor执行完毕后，通知taskLooper
-            return;
-        }
+//        if (idlePositionCount == 0) {
+//            // taskExecutor被占用了，暂时不处理，等待taskExecutor执行完毕后，通知taskLooper
+//            return;
+//        }
         while (idlePositionCount > 0) {
-            if (taskStack.empty()) {
+            if (taskStack == null || taskStack.empty()) {
                 break;
             }
             Task task = taskStack.pop();
@@ -61,6 +60,12 @@ public class TaskLooper {
             }
             idlePositionCount--;
         }
-    }
 
+        if (taskExecutor.mTasks == null) {
+            Log.d("aaa", "--> taskExecutor.mTasks == null ");
+        } else {
+            Log.d("aaa", "--> taskExecutor.mTasks size  ==  " + taskExecutor.mTasks.size());
+        }
+        taskExecutor.executeTasks();
+    }
 }

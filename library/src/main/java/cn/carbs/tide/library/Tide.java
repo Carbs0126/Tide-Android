@@ -1,5 +1,7 @@
 package cn.carbs.tide.library;
 
+import android.util.Log;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.carbs.tide.library.configuration.TideConfiguration;
@@ -34,6 +36,7 @@ public class Tide {
         if (recyclerView != null) {
             OnRecyclerViewScrollListener onRecyclerViewScrollListener = tide.getOnScrollListener();
             if (onRecyclerViewScrollListener.getRecyclerView() != recyclerView) {
+                Log.d("wangwangwang", "=====> with addOnScrollListener");
                 recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
                 onRecyclerViewScrollListener.setRecyclerView(recyclerView);
             }
@@ -58,7 +61,7 @@ public class Tide {
         }
     }
 
-    protected OnRecyclerViewScrollListener getOnScrollListener() {
+    public OnRecyclerViewScrollListener getOnScrollListener() {
         if (mOnScrollListener == null) {
             initOnScrollListener();
         }
@@ -71,7 +74,7 @@ public class Tide {
     }
 
     public Tide skipTaskWhileScrolling() {
-        mConfiguration.skipTaskWhileScrolling = true;
+        mConfiguration.pauseTaskWhileScrolling = true;
         return this;
     }
 

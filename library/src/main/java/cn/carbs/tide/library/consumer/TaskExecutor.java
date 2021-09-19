@@ -1,11 +1,17 @@
 package cn.carbs.tide.library.consumer;
 
+import android.util.Log;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.Stack;
 
+import cn.carbs.tide.library.Tide;
 import cn.carbs.tide.library.cache.TaskCache;
 import cn.carbs.tide.library.producer.Task;
 import cn.carbs.tide.library.producer.TaskState;
 import cn.carbs.tide.library.queue.TaskStack;
+import cn.carbs.tide.library.scroll.OnRecyclerViewScrollListener;
 
 public class TaskExecutor {
 
@@ -49,10 +55,9 @@ public class TaskExecutor {
     public void submit(Task task) {
         addTask(task);
         task.setTaskExecutor(this);
-        executeTasks();
     }
 
-    private void executeTasks() {
+    public void executeTasks() {
         synchronized (this) {
             for (Task taskItem : mTasks) {
                 if (taskItem.state != TaskState.Pending) {
@@ -65,9 +70,20 @@ public class TaskExecutor {
                         if (result != null) {
                             taskItem.runTaskCallback(result, null);
                             taskItem.state = TaskState.Done;
+                            Log.d("aaa", "===========> cached");
                             // TODO
                             TaskStack.getInstance().notifyLopper();
                             continue;
+                        }
+                    }
+                    if (taskItem.getIfPauseTaskWhileScrolling()) {
+                        // 判断是否需要在滑动时停止执行task
+                        // TODO Tide 不应该有全局listener
+                        OnRecyclerViewScrollListener scrollListener = Tide.getInstance().getOnScrollListener();
+                        if (scrollListener != null
+                                && scrollListener.getCurrentState() == RecyclerView.SCROLL_STATE_SETTLING) {
+                            // 如果正在滑动
+                            return;
                         }
                     }
                     taskItem.state = TaskState.Executing;
@@ -79,7 +95,16 @@ public class TaskExecutor {
 
     private void removeCompletedTasks() {
         synchronized (this) {
-
+            if (mTasks == null || mTasks.isEmpty()) {
+                return;
+            }
+            int size = mTasks.size();
+            for (int i = size - 1; i >= 0; i--) {
+                Task task = mTasks.get(i);
+                if (task != null && task.state == TaskState.Done) {
+                    mTasks.remove(task);
+                }
+            }
         }
     }
 
