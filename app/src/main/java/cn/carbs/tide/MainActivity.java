@@ -6,10 +6,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import cn.carbs.tide.recyclerview.adapter.TheAdapter;
 import cn.carbs.tide.recyclerview.model.ItemData;
@@ -24,6 +27,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initRecyclerView();
         initData();
+
+        test();
+    }
+
+    private void test() {
+        Queue<String> queue = new LinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            queue.offer("string : " + i);
+        }
+        Log.d("wangwang", "---------> item : ");
+        for (String item : queue) {
+            Log.d("wangwang", "---------> item : " + item);
+        }
+
+        for (int i = 0; i < 12; i++) {
+            String x = queue.poll();
+            // 有可能为空，但是不报错
+            Log.d("wangwang", "---------> x : " + x);
+        }
+
     }
 
     private void initRecyclerView() {
@@ -38,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             ItemData itemData = new ItemData();
             itemData.dataID = i;
             itemData.title = "标题：" + i;
-            itemData.url = "";
+            itemData.url = "www.example.com/test?index=" + i;
             list.add(itemData);
         }
         TheAdapter adapter = new TheAdapter(this, list);
