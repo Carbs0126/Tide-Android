@@ -31,12 +31,12 @@ public class RequestManager {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(5000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 if (requestCallback != null) {
-                    requestCallback.onResponseComplete("data : " + url, null);
+                    requestCallback.onResponseComplete("data---> : " + url, null);
                 }
             }
         }).start();

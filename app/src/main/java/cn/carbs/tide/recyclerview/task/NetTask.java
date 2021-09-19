@@ -1,8 +1,11 @@
 package cn.carbs.tide.recyclerview.task;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
 import cn.carbs.tide.library.producer.Task;
 import cn.carbs.tide.library.producer.TaskCallback;
-import cn.carbs.tide.library.queue.TaskQueue;
 import cn.carbs.tide.request.ResponseCallback;
 import cn.carbs.tide.request.RequestManager;
 
@@ -30,22 +33,21 @@ public class NetTask extends Task {
         RequestManager.getInstance().request(netUrl, new ResponseCallback() {
             @Override
             public void onResponseComplete(Object result, Throwable throwable) {
-                onTaskDone(result, throwable);
-                TaskCallback taskCallback = NetTask.this.getTaskCallback();
-                if (taskCallback != null) {
-                    if (throwable != null) {
-                        taskCallback.onTaskError(NetTask.this, throwable);
-                    } else {
-                        taskCallback.onTaskCompleted(NetTask.this, result);
+                Log.d("wangwang", "onResponseComplete ---- current thread name : " + Thread.currentThread().getName());
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("wangwang", "onResponseComplete Handler ---- current thread name : " + Thread.currentThread().getName());
+                        onTaskDone(getId(), result, throwable);
+                        runTaskCallback(result, throwable);
                     }
-                }
+                });
             }
         });
     }
 
     @Override
-    public void onTaskDone(Object result, Throwable throwable) {
-        super.onTaskDone(result, throwable);
-        TaskQueue.getInstance().notifyLopper();
+    public void onTaskDone(Object id, Object result, Throwable throwable) {
+        super.onTaskDone(id, result, throwable);
     }
 }

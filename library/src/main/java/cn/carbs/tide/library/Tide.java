@@ -1,12 +1,12 @@
 package cn.carbs.tide.library;
 
-import cn.carbs.tide.library.configuration.TaskConfiguration;
+import cn.carbs.tide.library.configuration.TideConfiguration;
 import cn.carbs.tide.library.producer.Task;
 import cn.carbs.tide.library.queue.TaskQueue;
 
 public class Tide {
 
-    private TaskConfiguration mConfiguration = new TaskConfiguration();
+    private TideConfiguration mConfiguration = new TideConfiguration();
 
     private Tide() {
         init();

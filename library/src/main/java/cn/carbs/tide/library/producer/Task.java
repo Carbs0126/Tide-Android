@@ -4,10 +4,10 @@ import java.lang.ref.WeakReference;
 
 import cn.carbs.tide.library.cache.TaskCache;
 import cn.carbs.tide.library.configuration.TaskConfiguration;
+import cn.carbs.tide.library.configuration.TideConfiguration;
 import cn.carbs.tide.library.consumer.TaskExecutor;
 import cn.carbs.tide.library.queue.TaskQueue;
 
-// 非 runnable 类
 public abstract class Task {
 
     private TaskConfiguration mConfiguration = new TaskConfiguration();
@@ -36,10 +36,55 @@ public abstract class Task {
         }
     }
 
-    public void onTaskDone(Object result, Throwable throwable) {
-        if (throwable == null) {
+    public void onTaskDone(Object id, Object result, Throwable throwable) {
+        addToCache(result, throwable);
+        removeTaskFromExecutor();
+        notifyLooperToWorkAgain();
+    }
+
+    public void runTaskCallback(Object result, Throwable throwable) {
+        TaskCallback taskCallback = getTaskCallback();
+        if (taskCallback != null) {
+            if (throwable != null) {
+                taskCallback.onTaskError(this, throwable);
+            } else {
+                taskCallback.onTaskCompleted(this, result);
+            }
+        }
+    }
+
+    public void setConfiguration(TideConfiguration tideConfiguration) {
+        if (tideConfiguration != null) {
+            if (mConfiguration == null) {
+                mConfiguration = new TaskConfiguration();
+            }
+            mConfiguration.skipTaskWhileScrolling = tideConfiguration.skipTaskWhileScrolling;
+            mConfiguration.skipCache = tideConfiguration.skipCache;
+        }
+    }
+
+    public boolean getIfSkipCache() {
+        if (mConfiguration == null) {
+            return false;
+        }
+        return mConfiguration.skipCache;
+    }
+
+    public boolean getIfSkipTaskWhileScrolling() {
+        if (mConfiguration == null) {
+            return false;
+        }
+        return mConfiguration.skipTaskWhileScrolling;
+    }
+
+    private void addToCache(Object result, Throwable throwable) {
+        // 添加进cache中
+        if (result != null && throwable == null) {
             TaskCache.getInstance().putKeyAndValue(getId(), result);
         }
+    }
+
+    private void removeTaskFromExecutor() {
         // 从executor中移除
         if (weakExecutor != null) {
             TaskExecutor taskExecutor = weakExecutor.get();
@@ -47,19 +92,11 @@ public abstract class Task {
                 taskExecutor.removeTask(this);
             }
         }
-        // queue继续执行
-        TaskQueue.getInstance().notifyLopper();
     }
 
-    public void setConfiguration(TaskConfiguration taskConfiguration) {
-        if (taskConfiguration != null) {
-            if (mConfiguration == null) {
-                mConfiguration = new TaskConfiguration();
-            }
-            mConfiguration.maxConcurrentTaskCount = taskConfiguration.maxConcurrentTaskCount;
-            mConfiguration.skipTaskWhileScrolling = taskConfiguration.skipTaskWhileScrolling;
-            mConfiguration.skipCache = taskConfiguration.skipCache;
-        }
+    private void notifyLooperToWorkAgain() {
+        // queue继续执行
+        TaskQueue.getInstance().notifyLopper();
     }
 
 }

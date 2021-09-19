@@ -1,4 +1,7 @@
 
+改成stack
+
+去掉remove，只是置位
 
 一个类似glide的库，与网络库请求解耦，request排队进入，请求，请求结束后的response返回，类似glide api
 
